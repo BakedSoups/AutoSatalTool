@@ -1,6 +1,6 @@
 [
   {
-    "layout": "Title",
+    "layout_index": 0,
     "shapes": [
       {
         "type": 14,
@@ -37,7 +37,7 @@
     ]
   },
   {
-    "layout": "Title and Body",
+    "layout_index": 2,
     "shapes": [
       {
         "type": 14,
@@ -74,7 +74,7 @@
     ]
   },
   {
-    "layout": "Title and Body",
+    "layout_index": 2,
     "shapes": [
       {
         "type": 14,
@@ -103,7 +103,7 @@
     ]
   },
   {
-    "layout": "Title and Body",
+    "layout_index": 2,
     "shapes": [
       {
         "type": 14,
@@ -124,7 +124,7 @@
     ]
   },
   {
-    "layout": "Title and Body",
+    "layout_index": 2,
     "shapes": [
       {
         "type": 14,
@@ -145,7 +145,7 @@
     ]
   },
   {
-    "layout": "Title and Body",
+    "layout_index": 2,
     "shapes": [
       {
         "type": 14,
@@ -162,6 +162,35 @@
         "width": 8520600,
         "height": 3416400,
         "text": ""
+      }
+    ]
+  },
+  {
+    "layout_index": 2,
+    "shapes": [
+      {
+        "type": 14,
+        "left": 311700,
+        "top": 445025,
+        "width": 8520600,
+        "height": 572700,
+        "text": "Thank you!"
+      },
+      {
+        "type": 14,
+        "left": 311700,
+        "top": 1152475,
+        "width": 8520600,
+        "height": 3416400,
+        "text": "Contact:  asignorini@ucmerced.edu\n\nIf you have further comments and questions,or want to recommend SATAL in any other class. "
+      },
+      {
+        "type": 13,
+        "left": 0,
+        "top": 3787249,
+        "width": 2005149,
+        "height": 1356250,
+        "text": null
       }
     ]
   }
