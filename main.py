@@ -1,78 +1,77 @@
 from pptx import Presentation
-import os
-import json
+from pptx.util import Inches
+import qrcode
 
-def pptx_to_xml(pptx_path, xml_path):
-    presentation = Presentation(pptx_path)
-    xml_data = []
+def replace_shape_with_qrcode(slide, shape_index, qr_code_data):
+    # Get the shape to replace
+    shape = slide.shapes[shape_index]
 
-    for i, slide in enumerate(presentation.slides):
-        slide_data = {
-            'layout_index': presentation.slide_layouts.index(slide.slide_layout),
-            'shapes': []
-        }
+    # Remove existing shape
+    sp = slide.shapes._spTree.remove(shape._element)
 
-        for shape in slide.shapes:
-            shape_data = {
-                'type': shape.shape_type,
-                'left': shape.left,
-                'top': shape.top,
-                'width': shape.width,
-                'height': shape.height,
-                'text': shape.text if hasattr(shape, 'text') else None
-            }
-            slide_data['shapes'].append(shape_data)
+    # Create QR code image
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_code_data)
+    qr.make(fit=True)
 
-        xml_data.append(slide_data)
+    # Create QR code image and insert it into the slide
+    img = qr.make_image(fill_color="black", back_color="white")
+    image_path = "temp_qr_code.png"
+    img.save(image_path)
+    slide.shapes.add_picture(image_path, shape.left, shape.top, width=shape.width, height=shape.height)
 
-    with open(xml_path, 'w') as xml_file:
-        json.dump(xml_data, xml_file, indent=2)
 
-def xml_to_pptx(xml_path, pptx_path):
-    with open(xml_path, 'r') as xml_file:
-        slides_data = json.load(xml_file)
-
-    presentation = Presentation()
-
-    for slide_data in slides_data:
-        layout_index = slide_data['layout_index']
-
-        try:
-            new_layout = presentation.slide_layouts[layout_index]
-        except IndexError:
-            print(f"Error: Slide layout with index {layout_index} not found. Skipping slide.")
-            continue
-
-        slide = presentation.slides.add_slide(new_layout)
-
-        for shape_data in slide_data['shapes']:
-            shape_type = shape_data['type']
-
-            if shape_type not in [1, 2, 3, 4]:
-                print(f"Error: Invalid shape type '{shape_type}'. Skipping shape.")
-                continue
-
-            shape = slide.shapes.add_shape(
-                shape_type,
-                shape_data['left'],
-                shape_data['top'],
-                shape_data['width'],
-                shape_data['height']
-            )
-
-            if 'text' in shape_data and shape.has_text_frame:
-                shape.text_frame.text = shape_data['text']
-
-    presentation.save(pptx_path)
+def replace_name(slide, name,font): 
+    for i in range(len(slide.shapes)):
+        if slide.shapes[i].has_text_frame:
+            if slide.shapes[i].text == "[CLASS + NUMBER]":
+                text_frame = slide.shapes[i].text_frame
+                text_frame.text = text_frame.text.replace("[CLASS + NUMBER]", name)
+                
+                for paragraph in text_frame.paragraphs:
+                    for run in paragraph.runs:
+                        run.font.name = font
+                return "Replacement Sucesfull"
+    raise Exception("No name found")
+    
+def printShapes(slide):
+    for i, shape in enumerate(slide.shapes):
+        if shape.has_text_frame:
+            print(f"Shape {i+1} (Text): {shape.text_frame.text}")
+        else:
+            print(f"Shape {i+1} (Non-Text)")
 
 def main():
-    current_dir = os.getcwd()
-    template_pptx_path = os.path.join(current_dir, "template.pptx")
-    xml_output_path = os.path.join(current_dir, "output.xml")
-    converted_pptx_path = os.path.join(current_dir, "converted.pptx")
+    # Load the PowerPoint presentation
+    presentation = Presentation("your_template.pptx")
+    Intro_Slide = presentation.slides[0] 
+    Indivual_Slide = presentation.slides[1]
+    Group_Slide = presentation.slides[2]
 
-    pptx_to_xml(template_pptx_path, xml_output_path)
-    xml_to_pptx(xml_output_path, converted_pptx_path)
+    # Specify the slide index and shape index you want to replace with QR 
+    slide_index = 0
+    shape_index = 0
+
+    # QR code data (replace with actual data)
+    qr_code_data = "https://www.example.com"
+
+    # Replace the name of the class
+    replace_name(Intro_Slide, "CSE 100", "Times New Roman") 
+
+    # Replace the shape with QR code
+    replace_shape_with_qrcode(Indivual_Slide,4,qr_code_data)
+    replace_shape_with_qrcode(Group_Slide,3,qr_code_data)
+
+    # Save the updated presentation 
+    presentation.save("output_presentation.pptx")
+
+   
+    # printShapes(Indivual_Slide)
 
 if __name__ == "__main__":
     main()
