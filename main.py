@@ -32,7 +32,6 @@ def replace_name(slide, name,font):
             if slide.shapes[i].text == "[CLASS + NUMBER]":
                 text_frame = slide.shapes[i].text_frame
                 text_frame.text = text_frame.text.replace("[CLASS + NUMBER]", name)
-                
                 for paragraph in text_frame.paragraphs:
                     for run in paragraph.runs:
                         run.font.name = font
